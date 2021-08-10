@@ -2,36 +2,36 @@ import React, { useEffect, useState } from 'react';
 import TodoForm from './TodoForm';
 import Todo from './Todo';
 import axios from 'axios';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import { Button } from '@material-ui/core';
 function TodoList() {
   const [todos, setTodos] = useState([]);
 
-  const addTodo = todo => {
+  const addTodo = async todo => {
     if (!todo.todo_text || /^\s*$/.test(todo.todo_text)) {
       return;
     }
-   
-    const newTodos = [todo, ...todos];
-    axios.post("/todos",{
+   await axios.post("/todos",{
       "todo_text":todo.todo_text
- })
-    setTodos(newTodos);
- 
-  };
-  useEffect(()=>{
+    })
+    await axios.get(`/getTodos`).then(res => setTodos(res.data)) 
+    };
+  
+    useEffect(()=>{
     axios.get(`/getTodos`).then(res => setTodos(res.data))
-},[])
-console.log(todos)
-  const updateTodo = (todoId, newValue) => {
+    },[])
+    console.log(todos)
+    const updateTodo = (todoId, newValue) => {
     if (!newValue.todo_text || /^\s*$/.test(newValue.todo_text)) {
       return;
     }
     axios.post('/update',{"id":todoId,"todo_text":newValue.todo_text})
-    setTodos(prev => prev.map(item => (item.id === todoId ? newValue : item)));
-  };
+    axios.get(`/getTodos`).then(res => setTodos(res.data)) 
+    };
 
-  const removeTodo = id => {
+    const removeTodo = id => {
     const removedArr = [...todos].filter(todo => todo._id !== id);
- axios.post('/delete',{"id":id});
+    axios.post('/delete',{"id":id});
     setTodos(removedArr);
   };
 
@@ -55,6 +55,12 @@ console.log(todos)
         removeTodo={removeTodo}
         updateTodo={updateTodo}
       />
+      <div className="navigation_buttons">
+      <button className="btn_next">Prev</button>
+      <button className="btn_next">Next</button>
+      </div>
+     
+
     </>
   );
 }
