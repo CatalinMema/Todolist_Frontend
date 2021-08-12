@@ -5,9 +5,10 @@
 }
 
 body {
-  background: linear-gradient(-70deg, #838ebe, #2257a5, #23a6d5, #23d5ab);
+  background: linear-gradient(-70deg, #838ebe, #2257a5, #0e536d, #0577d4);
 	background-size: 400% 400%;
 	animation: gradient 7s ease-in-out infinite;
+  overflow-y: hidden;
 }
 @keyframes gradient {
 	0% {
@@ -25,18 +26,23 @@ body {
   display: flex;
   flex-direction: column;
   width: 520px;
-  min-height: 600px;
+  min-height: 900px;
   background: #161a2b;
   text-align: center;
-  margin: 100px auto;
+  margin: 1em auto;
   border-radius: 10px;
-  padding-bottom: 32px;
+  padding-bottom: 1em;
 }
 
 h1 {
   margin: 32px 0;
   color: #fff;
   font-size: 24px;
+}
+
+p{
+  color: #fff;
+  font-size: 20px;
 }
 
 
@@ -46,10 +52,30 @@ h1 {
 }
 
 .todo-form {
-  margin-bottom: 32px;
+  margin-bottom: 1em;
+}
+.add_todo_container{
+  display: flex;
+  margin: auto auto;
+  justify-content: center;
+  width: fit-content;
 }
 
 .todo-input {
+  padding: 14px 32px 14px 16px;
+  border-radius: 4px 0 0 4px;
+  border-top: 2px solid #5d0cff;
+  border-bottom: 2px solid #5d0cff;
+  border-left: 2px solid #5d0cff;
+  border-right: 2px solid transparent;
+  outline: none;
+  outline: none;
+  width: 23.6em;
+  height: 8.4em;
+  background: transparent;
+  color: #fff;
+}
+.todo-input-update {
   padding: 14px 32px 14px 16px;
   border-radius: 4px 0 0 4px;
   border: 2px solid #5d0cff;
@@ -57,14 +83,45 @@ h1 {
   width: 320px;
   background: transparent;
   color: #fff;
+
+}
+.todo_buttons{
+  display: flex;
+  flex-direction: column;
+  height: 7em;
+}
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 0.6; /* Firefox */
+}
+
+.todo-input-search {
+  padding: 14px 32px 14px 16px;
+  border-radius: 4px 0 0 4px;
+  border: 2px solid #149fff;
+  outline: none;
+  width: 35em;
+  background: transparent;
+  color: #fff;
 }
 
 .todo-input::placeholder {
   color: #e2e2e2;
 }
-
+.date_input{ 
+  padding: 1.1em 0.4em;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(
+    90deg,
+    rgba(93, 12, 255, 1) 0%,
+    rgba(155, 0, 250, 1) 100%
+  );
+  color:white;
+  outline: none;
+}
 .todo-button {
-  padding: 16px;
+  padding: 1.1em;
   border: none;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
@@ -106,7 +163,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 4px auto;
+  margin: 0.5em auto;
   color: #fff;
   background: linear-gradient(
     90deg,
@@ -162,7 +219,7 @@ h1 {
 
 .navigation_buttons{
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
 }
 .btn_prev{
   margin-right: 20px;
@@ -172,3 +229,10 @@ h1 {
 .btn_next{
   margin-left: 20px;
 }
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  
+}
+ 
+
