@@ -5,6 +5,8 @@ import { RiCloseCircleLine } from 'react-icons/ri';
 import { TiEdit } from 'react-icons/ti';
 import {ADD_SOME, NEXT, NOTHING_PLANNED, PREV, SEARCH_TODO, SKIPS, TITLE, TODO_NOT_FOUND, UPDATE_TODO} from '../utils/constants';
 function TodoList() {
+
+ 
   const [todos, setTodos] = useState([]);
   const [nr_skips,setnr_skips] = useState(0);
   const [todosNumber,setTodosNumber]=useState(0);
@@ -25,10 +27,17 @@ function TodoList() {
     value: ''
   });
   const inputRef = useRef(null);
-
+  const showAll = () =>{
+    setDateOfTodo('All')
+  };
+  const showToday = () =>{
+    setDateOfTodo(dateString);
+    setnr_skips(0);
+  };
   const onChangeSetDate = async todo =>{
+    setnr_skips(0);
     setDateOfTodo(todo);
-    await axios.get(`/dayfilter/${todo}/8`).then(res => setTodos(res.data));
+    await axios.get(`/dayfilter/${todo}/${SKIPS}`).then(res => setTodos(res.data));
   }
   const [input, setInput] = useState('');
     const [response,setResponse] = useState([]);
@@ -53,6 +62,7 @@ function TodoList() {
     });
   };
 
+ 
 
   const addTodo = async todo => {
     if (!todo.todo_text || /^\s*$/.test(todo.todo_text)) {
@@ -60,13 +70,20 @@ function TodoList() {
     }
     await axios.post("/todos",{
       "todo_text":todo.todo_text,
-      "date_todo":todo.date_todo
+      "date_todo":todo.date_todo,
+      "completed_todo":todo.completed_todo
     });
-    await axios.get(`/dayfilter/${todo.date_todo}/${nr_skips}`).then(res => setTodos(res.data));
+    if(dateOfTodo!=="All"){ 
+      await axios.get(`/dayfilter/${todo.date_todo}/${nr_skips}`).then(res => setTodos(res.data));
    // await axios.get(`/getTodos/page/${nr_skips}`).then(res => setTodos(res.data));
     await axios.get(`/dayfilter/${dateOfTodo}`).then(res => setTodosNumber(res.data));
+  }
+  else{
+    await axios.get(`/getTodos/page/${nr_skips}`).then(res => setTodos(res.data));
+    await axios.get(`/getTodos`).then(res => setTodosNumber(res.data));
+  }
+    
   };
-  
   // useEffect(()=>{
   //   async function fetchData() {
   //     await axios.get(`/getTodos`).then(res => setTodosNumber(res.data))
@@ -85,14 +102,30 @@ function TodoList() {
     async function fetchData() {
       await axios.get(`/dayfilter/${dateOfTodo}`).then(res => setTodosNumber(res.data))
     };
-    fetchData();
+    async function fetchDataAll() {
+      await axios.get(`/getTodos`).then(res => setTodosNumber(res.data));
+    }
+    if(dateOfTodo!=="All"){
+      fetchData();
+      }
+      else if(dateOfTodo==="All"){
+        fetchDataAll();
+      }
      },[dateOfTodo,todos.length])
 
    useEffect(()=>{
     async function fetchData() {
       await axios.get(`/dayfilter/${dateOfTodo}/${nr_skips}`).then(res => setTodos(res.data));
     }
+    async function fetchDataAll() {
+      await axios.get(`/getTodos/page/${nr_skips}`).then(res => setTodos(res.data));
+    }
+    if(dateOfTodo!=="All"){
     fetchData();
+    }
+    else if(dateOfTodo==="All"){
+      fetchDataAll();
+    }
     },[todos.length,dateOfTodo,nr_skips])
   
   const updateTodo = async (todoId, newValue) => {
@@ -100,7 +133,13 @@ function TodoList() {
       return;
     }
    await axios.post('/update',{"id":todoId,"todo_text":newValue.todo_text,"date_todo":newValue.date_todo})
-   await axios.get(`/dayfilter/${dateOfTodo}/${nr_skips}`).then(res => setTodos(res.data));
+   if(dateOfTodo!=="All"){
+    await axios.get(`/dayfilter/${dateOfTodo}/${nr_skips}`).then(res => setTodos(res.data));
+    }
+    else if(dateOfTodo==="All"){
+      await axios.get(`/getTodos/page/${nr_skips}`).then(res => setTodos(res.data));
+    }
+   
    if(input){
    await axios.get(`/search/${input}`).then(res => setResponse(res.data))
    }
@@ -124,14 +163,29 @@ function TodoList() {
     //axios.get('/getTodos').then(res => setTodosNumber(res.data))
   };
   
-  const completeTodo = id => {
+  const completeTodo = async (id,completed) => {
     let updatedTodos = todos.map(todo => {
       if (todo._id === id) {
-        todo.isComplete = !todo.isComplete;
+        todo.completed_todo = !todo.completed_todo;
+      completed=todo.completed_todo;
       }
       return todo;
     });
+    await axios.post('/completed',{"id":id,"completed_todo":completed});
     setTodos(updatedTodos);
+  };
+
+  const completeTodoSearch = async (id,completed) => {
+    let updatedTodos = response.map(todo => {
+      if (todo._id === id) {
+        todo.completed_todo = !todo.completed_todo;
+      completed=todo.completed_todo;
+      }
+      return todo;
+    });
+    await axios.post('/completed',{"id":id,"completed_todo":completed});
+    setTodos(updatedTodos);
+    setResponse(updatedTodos);
   };
 
   const newPage = (direction) => {
@@ -145,11 +199,22 @@ function TodoList() {
   
   const todosList = todos.map((todo, index) => (
     <div
-      className={todo.isComplete ? 'todo-row complete' : 'todo-row'}
+      className={todo.completed_todo ? 'todo-row complete' : 'todo-row'}
       key={index}
     >
-      <div className="todo_text" key={todo._id} onClick={() => completeTodo(todo._id)}>
-        {todo.todo_text}
+      <div className="todo_text" key={todo._id} onClick={() => completeTodo(todo._id,todo.completed_todo)}>
+        {/* <h4> {truncate(todo.todo_text,40)}</h4> */}
+       
+        {todo.todo_text.length>54 ? ( <h4 className="txt_todo" >
+      {todo.todo_text} 
+      </h4>) : (
+      <div style={{flex:'0.98',display:'flex',justifyContent:'space-between'}}>
+
+      <h4 className={todo.completed_todo ? 'completeLine' : null}>{todo.todo_text} </h4>
+      {dateOfTodo!=="All" ? (<></>) : (<>  {todo.date_todo.slice(5,10).split("-").reverse().join("/")}</>)}
+      </div>
+      ) }
+        {/* {todo.todo_text} */}
       </div>
       <div className='icons'>
         <RiCloseCircleLine
@@ -163,14 +228,25 @@ function TodoList() {
       </div>
     </div>
   ));
-
-  const SearchtodosList = response?.map((todo, index) => (
+  console.log(response)
+  const searchtodosList = response?.map((todo, index) => (
     <div
-      className={todo.isComplete ? 'todo-row complete' : 'todo-row'}
+      className={todo.completed_todo ? 'todo-row complete' : 'todo-row'}
       key={index}
     >
-      <div className="todo_text" key={todo._id} onClick={() => completeTodo(todo._id)}>
-        {todo.todo_text}
+      <div className="todo_text" key={todo._id} onClick={() => completeTodoSearch(todo._id,todo.completed_todo)}>
+        {/* <h4> {truncate(todo.todo_text,40)}</h4> */}
+       
+        {todo.todo_text.length>54 ? ( <h4 className="txt_todo" >
+      {todo.todo_text} 
+      </h4>) : (
+      <div style={{flex:'0.98',display:'flex',justifyContent:'space-between'}}>
+
+      <h4 className={todo.completed_todo ? 'completeLine' : null}>{todo.todo_text} </h4>
+       {todo.date_todo.slice(5,10).split("-").reverse().join("/")}
+      </div>
+      ) }
+        {/* {todo.todo_text} */}
       </div>
       <div className='icons'>
         <RiCloseCircleLine
@@ -200,15 +276,15 @@ function TodoList() {
     <form className='todo-form'>
           <input
           autoComplete="off"
-            placeholder='Search todo'
+            placeholder={SEARCH_TODO}
             value={input}
             onChange={handleChange}
             name='text'
             ref={inputRef}
-            className='todo-input-search'
+            className='todo-input-search-page'
           />
     </form>
-    {SearchtodosList.length > 0 ? (<>{SearchtodosList}</>) : (
+    {searchtodosList.length > 0 ? (<>{searchtodosList}</>) : (
       <div style={{paddingTop:'20em'}}>
     <p>{TODO_NOT_FOUND}</p>
     </div>
@@ -223,8 +299,9 @@ function TodoList() {
     <>
       <h1>{TITLE}</h1>
     <TodoForm dateOfTodo={dateOfTodo} onChangeSetDate={onChangeSetDate} onSubmit={addTodo} />
+      
+    <div className="search_reset_container">
       <div>
-        <form className='todo-form'>
           <input
           autoComplete="off"
           placeholder={SEARCH_TODO}
@@ -234,9 +311,20 @@ function TodoList() {
           ref={inputRef}
           className='todo-input-search'
           />
-    </form>
-  
-    </div>
+          </div>
+          <div>
+          {dateOfTodo!=="All" ? (
+             <button onClick={showAll}  className='todo-button'>
+             Show All
+           </button>
+          ) : ( <button onClick={showToday}  className='todo-button'>
+          Today
+        </button>) }
+          
+          </div>
+     </div>
+    
+    
       <div style={{minHeight:'33em'}}> 
       {todos.length === 0 ? ( 
       <div style={{paddingTop:'10em'}}>

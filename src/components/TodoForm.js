@@ -9,7 +9,9 @@ function TodoForm({edit,onChangeSetDate,onSubmit,dateOfTodo}) {
   useEffect(() => {
     inputRef.current.focus();
   });
-  
+  useEffect(()=>{
+    setInputDate(dateOfTodo)
+  },[dateOfTodo])
  
    
   const handleChange = e => {
@@ -26,7 +28,8 @@ function TodoForm({edit,onChangeSetDate,onSubmit,dateOfTodo}) {
 
     onSubmit({
       todo_text: input,
-      date_todo: inputdate
+      date_todo: inputdate,
+      completed_todo: false
     });
 //     axios.post("/todos",{
 //       "todo_text":input
@@ -53,13 +56,14 @@ function TodoForm({edit,onChangeSetDate,onSubmit,dateOfTodo}) {
       ) : (
         <div className="add_todo_container">
           <div>
-          <input
+          <textarea
             placeholder={ADD_TODO}
             value={input}
             onChange={handleChange}
             name='text'
             className='todo-input'
             ref={inputRef}
+            maxLength="81"
           />
           </div>
           <div className="todo_buttons">

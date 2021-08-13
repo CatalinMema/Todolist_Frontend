@@ -5,7 +5,7 @@
 }
 
 body {
-  background: linear-gradient(-70deg, #838ebe, #2257a5, #0e536d, #0577d4);
+  background: linear-gradient(-70deg, rgb(36, 3, 104), #042846, #730d92, #042846);
 	background-size: 400% 400%;
 	animation: gradient 7s ease-in-out infinite;
   overflow-y: hidden;
@@ -45,9 +45,10 @@ p{
   font-size: 20px;
 }
 
-
-.complete {
+.completeLine{
   text-decoration: line-through;
+}
+.complete {
   opacity: 0.5;
 }
 
@@ -56,24 +57,20 @@ p{
 }
 .add_todo_container{
   display: flex;
-  margin: auto auto;
   justify-content: center;
-  width: fit-content;
+  
 }
 
 .todo-input {
   padding: 14px 32px 14px 16px;
   border-radius: 4px 0 0 4px;
-  border-top: 2px solid #5d0cff;
-  border-bottom: 2px solid #5d0cff;
-  border-left: 2px solid #5d0cff;
-  border-right: 2px solid transparent;
+  border: 2px solid #5d0cff;
   outline: none;
-  outline: none;
-  width: 23.6em;
-  height: 8.4em;
+  width: 20.7em;
+  height: 7em;
   background: transparent;
   color: #fff;
+  font-size: large;
 }
 .todo-input-update {
   padding: 14px 32px 14px 16px;
@@ -89,20 +86,45 @@ p{
   display: flex;
   flex-direction: column;
   height: 7em;
+  margin-left: 1em;
 }
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: white;
   opacity: 0.6; /* Firefox */
 }
-
+.search_reset_container{
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin-top: 0;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0.5em;
+}
 .todo-input-search {
   padding: 14px 32px 14px 16px;
   border-radius: 4px 0 0 4px;
-  border: 2px solid #149fff;
+  border: 2px solid #5d0cff;
   outline: none;
-  width: 35em;
+  width: 25em;
+  height: 3.3em;
   background: transparent;
   color: #fff;
+}
+
+.todo-input-search-page{
+  padding: 14px 32px 14px 16px;
+  border-radius: 4px 0 0 4px;
+  border: 2px solid #5d0cff;
+  outline: none;
+  width: 35em;
+  height: 3.3em;
+  background: transparent;
+  color: #fff;
+}
+.show-all{
+  display: flex;
+  justify-content: center;
 }
 
 .todo-input::placeholder {
@@ -132,6 +154,7 @@ p{
     rgba(155, 0, 250, 1) 100%
   );
   color: #fff;
+  min-width: 9em;
   text-transform: capitalize;
 }
 
@@ -158,6 +181,14 @@ p{
   display: flex;
   justify-content: left;
   flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.todo_text, .txt_todo{
+  transition: 2s ease-in;     
+}
+.todo_text:hover .txt_todo{
+  margin-left: -11em;
 }
 .todo-row {
   display: flex;
@@ -232,7 +263,19 @@ p{
 
 ::-webkit-calendar-picker-indicator {
   filter: invert(1);
+  margin-left: -10px;
   
 }
+ 
+textarea {
+  resize: none;
+  line-height: 1.8em;
+}
+
+textarea::-webkit-scrollbar {
+  display: none;
+}
+
+
  
 
