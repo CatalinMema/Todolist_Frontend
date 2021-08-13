@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import TodoForm from './TodoForm';
 import axios from 'axios';
-import { RiCloseCircleLine } from 'react-icons/ri';
-import { TiEdit } from 'react-icons/ti';
-import {ADD_SOME, NEXT, NOTHING_PLANNED, PREV, SEARCH_TODO, SKIPS, TITLE, TODO_NOT_FOUND, UPDATE_TODO} from '../utils/constants';
+import {ADD_SOME, NEXT, NOTHING_PLANNED, PREV, SEARCH_TODO, SKIPS, TITLE, UPDATE_TODO} from '../utils/constants';
+import Todos from './Todos';
 function TodoList() {
 
  
@@ -196,70 +195,6 @@ function TodoList() {
     }
   };
   //console.log(nr_skips);
-  
-  const todosList = todos.map((todo, index) => (
-    <div
-      className={todo.completed_todo ? 'todo-row complete' : 'todo-row'}
-      key={index}
-    >
-      <div className="todo_text" key={todo._id} onClick={() => completeTodo(todo._id,todo.completed_todo)}>
-        {/* <h4> {truncate(todo.todo_text,40)}</h4> */}
-       
-        {todo.todo_text.length>54 ? ( <h4 className="txt_todo" >
-      {todo.todo_text} 
-      </h4>) : (
-      <div style={{flex:'0.98',display:'flex',justifyContent:'space-between'}}>
-
-      <h4 className={todo.completed_todo ? 'completeLine' : null}>{todo.todo_text} </h4>
-      {dateOfTodo!=="All" ? (<></>) : (<>  {todo.date_todo.slice(5,10).split("-").reverse().join("/")}</>)}
-      </div>
-      ) }
-        {/* {todo.todo_text} */}
-      </div>
-      <div className='icons'>
-        <RiCloseCircleLine
-          onClick={() => removeTodo(todo._id)}
-          className='delete-icon'
-        />
-        <TiEdit
-          onClick={() => setEdit({ id: todo._id, value: todo.todo_text })}
-          className='edit-icon'
-        />
-      </div>
-    </div>
-  ));
-  console.log(response)
-  const searchtodosList = response?.map((todo, index) => (
-    <div
-      className={todo.completed_todo ? 'todo-row complete' : 'todo-row'}
-      key={index}
-    >
-      <div className="todo_text" key={todo._id} onClick={() => completeTodoSearch(todo._id,todo.completed_todo)}>
-        {/* <h4> {truncate(todo.todo_text,40)}</h4> */}
-       
-        {todo.todo_text.length>54 ? ( <h4 className="txt_todo" >
-      {todo.todo_text} 
-      </h4>) : (
-      <div style={{flex:'0.98',display:'flex',justifyContent:'space-between'}}>
-
-      <h4 className={todo.completed_todo ? 'completeLine' : null}>{todo.todo_text} </h4>
-       {todo.date_todo.slice(5,10).split("-").reverse().join("/")}
-      </div>
-      ) }
-        {/* {todo.todo_text} */}
-      </div>
-      <div className='icons'>
-        <RiCloseCircleLine
-          onClick={() => removeTodo(todo._id)}
-          className='delete-icon'
-        />
-        <TiEdit
-          onClick={() => setEdit({ id: todo._id, value: todo.todo_text })}
-          className='edit-icon'
-        />
-      </div>
-    </div>
-  ));
 
   if(edit.id) {
     return (
@@ -284,11 +219,12 @@ function TodoList() {
             className='todo-input-search-page'
           />
     </form>
-    {searchtodosList.length > 0 ? (<>{searchtodosList}</>) : (
+    <Todos todos={response}  removeTodo={removeTodo} setEdit={setEdit} completeTodo={completeTodoSearch} dateOfTodo={dateOfTodo}/>
+    {/* {searchtodosList.length > 0 ? (<>{searchtodosList}</>) : (
       <div style={{paddingTop:'20em'}}>
     <p>{TODO_NOT_FOUND}</p>
     </div>
-    )}
+    )} */}
     </div>
     
     );
@@ -331,7 +267,9 @@ function TodoList() {
         <h1>{NOTHING_PLANNED}</h1>
         <p>{ADD_SOME}</p>
     </div>) : (
-        <>{todosList}</>
+       
+        <Todos todos={todos}  removeTodo={removeTodo} setEdit={setEdit} completeTodo={completeTodo} dateOfTodo={dateOfTodo}/>
+      
       ) }
     
       </div>
